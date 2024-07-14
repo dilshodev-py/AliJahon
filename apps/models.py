@@ -91,7 +91,7 @@ class Product(BaseSlugModel, BaseModel):
     description = TextField()
     price = FloatField()
     quantity = IntegerField()
-    category = ForeignKey('apps.Category', CASCADE, related_name='products')
+    category = ForeignKey('apps.Category', CASCADE , to_field='slug', related_name='products')
 
     def __str__(self):
         return self.name

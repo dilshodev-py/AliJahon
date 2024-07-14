@@ -1,9 +1,11 @@
 Tasks:
     1) template
     2) Bosh sahifa + pagination
-    2) Mahsulotlar + pagination
-    3) Wishlist + pagination
+    3) Mahsulotlar + pagination
+    4) Wishlist + pagination
     5) product detail
+    6) product order
+    7) menularni ishlidigan qilamiz
 
-    4) menularni ishlidigan qilamiz
+
 

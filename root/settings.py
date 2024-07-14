@@ -16,14 +16,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'apps',
-    'mathfilters'
+    'mathfilters',
+    'sorl.thumbnail',
+
 ]
 
 AUTH_USER_MODEL = 'apps.User'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

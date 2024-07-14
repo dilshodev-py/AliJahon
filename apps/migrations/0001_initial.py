@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('price', models.FloatField()),
                 ('quantity', models.IntegerField()),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='products', to='apps.category')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='products', to='apps.category', to_field='slug')),
             ],
             options={
                 'abstract': False,
