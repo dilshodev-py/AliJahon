@@ -11,12 +11,14 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Phone Number field must be set')
         user = self.model(phone_number=phone_number, **extra_fields)
         user.set_password(password)
-        user.save(using=self._db)
+        user.save()
         return user
 
     def create_superuser(self, phone_number, password, **extra_fields):
         user = self.create_user(phone_number, password, **extra_fields)
         user.is_superuser = True
+        user.is_staff = True
+        # user.save()
         return user
 
 
@@ -32,9 +34,9 @@ class User(AbstractUser):
     USERNAME_FIELD = 'phone_number'
     REQUIRED_FIELDS = []
     objects = CustomUserManager()
-    role = CharField(max_length=50 , choices=Role.choices, default=Role.USER)
+    role = CharField(max_length=50, choices=Role.choices, default=Role.USER)
     phone_number = CharField(max_length=12, unique=True)
-    district = ForeignKey('apps.District' , CASCADE , related_name='users', null=True)
+    district = ForeignKey('apps.District', CASCADE, related_name='users', null=True)
 
 
 class Region(Model):
@@ -80,6 +82,9 @@ class BaseSlugModel(Model):
 class Category(BaseSlugModel, BaseModel):
     image = ImageField(upload_to='images/')
 
+    class Meta:
+        verbose_name_plural = 'Categories'
+
     def __str__(self):
         return self.name
 
@@ -91,8 +96,11 @@ class Product(BaseSlugModel, BaseModel):
     description = TextField()
     price = FloatField()
     quantity = IntegerField()
-    category = ForeignKey('apps.Category', CASCADE , to_field='slug', related_name='products')
+    category = ForeignKey('apps.Category', CASCADE, to_field='slug', related_name='products')
 
+    @property
+    def first_image(self):
+        return self.images.first()
     def __str__(self):
         return self.name
 
@@ -100,3 +108,13 @@ class Product(BaseSlugModel, BaseModel):
 class ProductImage(Model):
     image = ImageField(upload_to='products/')
     product = ForeignKey('apps.Product', CASCADE, related_name='images')
+
+class Order(BaseModel):
+    product = ForeignKey('apps.Product', CASCADE, related_name='orders')
+    quantity = IntegerField(default=1)
+    user = ForeignKey('apps.User', CASCADE, related_name='orders')
+    full_name = CharField(max_length=255)
+    phone_number = CharField(max_length=20)
+
+
+

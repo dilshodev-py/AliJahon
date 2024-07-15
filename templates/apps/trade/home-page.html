@@ -29,7 +29,7 @@
                         <div class="border rounded-1 h-100 d-flex flex-column justify-content-between pb-3">
                             <div class="overflow-hidden">
                                 <div class="position-relative rounded-top overflow-hidden">
-                                    {% thumbnail product.images.first.image "366x250" format="PNG" as im %}
+                                    {% thumbnail product.images.first.image "250x130" format="PNG" as im %}
                                         <a class="d-block"
                                            href="../../../app/e-commerce/product/product-details.html"><img
                                                 class="img-fluid rounded-top" src="{{ im.url }}"
@@ -40,7 +40,8 @@
                                 </div>
                                 <div class="p-3">
 
-                                    <p class="fs--1 mb-3"><a class="text-500" href="#">Computer &amp; Accessories</a>
+                                    <p class="fs--1 mb-3"><a class="text-500" href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                                    <p class="fs--1 mb-3"><a class="text-500" href="#">{{ product.category.name }}</a>
                                     </p>
                                     <h5 class="fs-md-2 text-warning mb-0 d-flex align-items-center mb-3">{{ product.price|floatformat:"0"|intcomma }}</h5>
 

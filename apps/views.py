@@ -5,9 +5,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, ListView, FormView
+from django.views.generic import TemplateView, ListView, FormView, DetailView
 import django.contrib.auth.password_validation as validators
 
+from apps.forms import OrderForm
 from apps.models import Category, Product, User
 
 
@@ -34,14 +35,31 @@ class ProductListView(ListView):
         if cat_slug:
             query = query.filter(category__slug=cat_slug)
         return query
+
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         data['categories'] = Category.objects.all()
         return data
 
 
+class ProductDetailView(DetailView, FormView):
+    form_class = OrderForm
+    model = Product
+    template_name = 'apps/trade/product-detail.html'
+    context_object_name = 'product'
+    slug_url_kwarg = 'slug'
+
+    def form_valid(self, form):
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.user = self.request.user
+            form.save()
+        return render(self.request, 'apps/trade/product-order.html', {'form': form})
+
+
 class CustomLoginView(TemplateView):
     template_name = 'apps/auth/login.html'
+
     def post(self, request, *args, **kwargs):
         phone_number = re.sub(r'\D', '', request.POST.get('phone_number'))
         user = User.objects.filter(phone_number=phone_number).first()

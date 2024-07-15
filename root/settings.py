@@ -10,6 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -18,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'apps',
+    'teacher',
     'mathfilters',
     'sorl.thumbnail',
 
@@ -94,3 +96,29 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+JAZZMIN_SETTINGS = {
+    "site_title": "Library Admin",
+
+    "site_header": "Library",
+
+    "site_brand": "Alijahon",
+
+    "site_logo": "apps/app/logo_site.png",
+
+    "login_logo": None,
+
+    "login_logo_dark": None,
+
+    "site_logo_classes": "img-circle",
+
+    "site_icon": None,
+
+    "welcome_sign": "Welcome to the library",
+
+
+
+    "search_model": ["apps.User", "auth.Group"],
+
+
+
+}
