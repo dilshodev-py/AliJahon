@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Model, DateTimeField, CharField, ImageField, SlugField, TextField, FloatField, ForeignKey, \
     CASCADE, IntegerField, TextChoices
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 
@@ -38,6 +39,9 @@ class User(AbstractUser):
     phone_number = CharField(max_length=12, unique=True)
     district = ForeignKey('apps.District', CASCADE, related_name='users', null=True)
 
+    @property
+    def wishlist_all(self):
+        return self.wishlists.values_list('product_id', flat=True)
 
 class Region(Model):
     name = CharField(max_length=255, unique=True)
@@ -96,11 +100,15 @@ class Product(BaseSlugModel, BaseModel):
     description = TextField()
     price = FloatField()
     quantity = IntegerField()
+    for_stream_price = FloatField(default=1000)
     category = ForeignKey('apps.Category', CASCADE, to_field='slug', related_name='products')
 
     @property
     def first_image(self):
         return self.images.first()
+
+
+
     def __str__(self):
         return self.name
 
@@ -108,6 +116,9 @@ class Product(BaseSlugModel, BaseModel):
 class ProductImage(Model):
     image = ImageField(upload_to='products/')
     product = ForeignKey('apps.Product', CASCADE, related_name='images')
+
+
+
 
 class Order(BaseModel):
     product = ForeignKey('apps.Product', CASCADE, related_name='orders')
@@ -117,4 +128,6 @@ class Order(BaseModel):
     phone_number = CharField(max_length=20)
 
 
-
+class WishList(BaseModel):
+    product = ForeignKey('apps.Product', CASCADE, related_name='wishlists', to_field='slug')
+    user = ForeignKey('apps.User', CASCADE, related_name='wishlists')

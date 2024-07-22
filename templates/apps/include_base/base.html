@@ -166,7 +166,7 @@
                             </a>
                         <li/>
                         <li class="nav-item">
-                            <a class="nav-link" href="../../../app/calendar.html" role="button"
+                            <a class="nav-link" href="{% url 'order-list' %}" role="button"
                                aria-expanded="false">
                                 <div class="d-flex align-items-center"><span
                                         class="nav-link-text ps-1">Buyurtmalar</span>
@@ -174,7 +174,7 @@
                             </a>
                         <li/>
                         <li class="nav-item">
-                            <a class="nav-link" href="../../../app/calendar.html" role="button"
+                            <a class="nav-link" href="{% url 'wishlist' %}" role="button"
                                aria-expanded="false">
                                 <div class="d-flex align-items-center"><span
                                         class="nav-link-text ps-1">Yoqtirgan mahsulotlar</span>
@@ -183,7 +183,7 @@
                         <li/>
                         {% if request.user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="../../../app/calendar.html" role="button"
+                                <a class="nav-link" href="{% url 'market' %}" role="button"
                                    aria-expanded="false">
                                     <div class="d-flex align-items-center"><span
                                             class="nav-link-text ps-1">Market</span>
@@ -411,7 +411,7 @@
                            href="../../../app/e-commerce/shopping-cart.html"><span class="fas fa-shopping-cart"
                                                                                    data-fa-transform="shrink-7"
                                                                                    style="font-size: 33px;"></span><span
-                                class="notification-indicator-number">1</span></a>
+                                class="notification-indicator-number"></span></a>
 
                     </li>
                     <li class="nav-item dropdown">
@@ -664,7 +664,7 @@
         </div>
     </div>
 
-    </div>
+
 
 </main>
 
@@ -682,6 +682,55 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
 <script src="{% static "apps/vendors/list.js/list.min.js" %}"></script>
 <script src="{% static "apps/assets/js/theme.js" %}"></script>
+<script src="https://unpkg.com/imask"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
+    <script>
+        $(document).ready(function () {
+            var cartCount = parseInt($('#cart-icon').text()) || 0;
+
+            function updateCartCount() {
+                $('#cart-icon').text(cartCount);
+            }
+
+            $('.wish-btn').click(function () {
+                console.log("hi")
+                var postId = $(this).data('post-id');
+                var button = $(this); // Reference to the button clicked
+                var csrftoken = getCookie('csrftoken');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/product/liked/' + postId,
+                    dataType: 'json',
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                    success: function (response) {
+                        if (response.save > 0) {
+                            button.removeClass('bg-white');
+                            button.addClass('bg-danger');
+                            cartCount++;
+                            // Update cart icon
+                            updateCartCount();
+                        } else {
+                            cartCount--;
+                            // Update cart icon
+                            updateCartCount();
+                            button.removeClass('bg-danger');
+                            button.addClass('bg-white');
+                        }
+                        // Add the 'liked' class to change color
+                    },
+
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+            updateCartCount();
+        });
+    </script>
 
 </body>
 

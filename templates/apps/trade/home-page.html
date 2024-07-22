@@ -9,12 +9,13 @@
         <div class="row g-0 text-center fs--1">
             {% for category in categories %}
                 <div class="col-4 col-md-4 col-lg-3 col-xx1-2 mb-1">
-                    <div class="bg-white dark__bg-1100 p-1 h-100"><a href="{% url 'product_list' %}?category={{ category.slug }}"><img
+                    <div class="bg-white dark__bg-1100 p-1 h-100"><a
+                            href="{% url 'product_list' %}?category={{ category.slug }}"><img
                             class="img-thumbnail img-fluid  mb-3 shadow-sm" src="{{ category.image.url }}" alt=""
                             width="100"></a>
                         <h6 class="mb-1"><a href="/category/uy-uchun">{{ category.name }}</a>
                         </h6>
-                        
+
                         <p class="fs--2 mb-1"></p>
                     </div>
                 </div>
@@ -40,7 +41,8 @@
                                 </div>
                                 <div class="p-3">
 
-                                    <p class="fs--1 mb-3"><a class="text-500" href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                                    <p class="fs--1 mb-3"><a class="text-500"
+                                                             href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
                                     <p class="fs--1 mb-3"><a class="text-500" href="#">{{ product.category.name }}</a>
                                     </p>
                                     <h5 class="fs-md-2 text-warning mb-0 d-flex align-items-center mb-3">{{ product.price|floatformat:"0"|intcomma }}</h5>
@@ -50,10 +52,13 @@
                                 </div>
                             </div>
                             <div class="d-flex flex-between-center px-3">
-
-                                <div><a class="btn btn-sm btn-falcon-default me-2" href="#!" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" title="Add to Wish List"><span
-                                        class="far fa-heart"></span></a><a
+                                <div>
+                                    <a class="wish-btn btn btn-sm btn-falcon-default me-2 {% if product.slug in  request.user.wishlist_all %} bg-danger {% endif %}"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       data-post-id="{{ product.slug }}"
+                                       title="Add to Wish List"><span
+                                            class="far fa-heart"></span></a><a
                                         class="btn btn-sm btn-falcon-default" href="#!" data-bs-toggle="tooltip"
                                         data-bs-placement="top" title="Add to Cart"><span
                                         class="fas fa-cart-plus"></span></a></div>
@@ -81,4 +86,5 @@
             </div>
         </div>
     </div>
+    
 {% endblock %}
