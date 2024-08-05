@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, StackedInline
 from django.utils.html import format_html
+from mptt.admin import DraggableMPTTAdmin
 
 from apps.models import Category, Product, ProductImage, User
 
@@ -10,9 +11,11 @@ admin.site.register(User)
 
 
 @admin.register(Category)
-class CategoryAdmin(ModelAdmin):
+class CategoryAdmin(DraggableMPTTAdmin):
+
+
     exclude = 'slug',
-    list_display = 'id', 'name', 'image_photo', 'product_count'
+    # list_display = 'id', 'name', 'image_photo', 'product_count'
 
     @admin.display(empty_value="?")
     def image_photo(self, obj):

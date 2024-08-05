@@ -19,9 +19,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'apps',
-    'teacher',
+    'ckeditor',
     'mathfilters',
     'sorl.thumbnail',
+    'mptt'
 
 ]
 
@@ -84,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tashkent'
 
 USE_I18N = True
 
@@ -94,6 +95,11 @@ STATIC_URL = 'static/'
 STATIC_ROOT = join(BASE_DIR, 'static')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = join(BASE_DIR, 'media')
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_IMAGE_BACKEND = "pillow"
+DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'png'
+DJANGORESIZED_DEFAULT_SIZE = [200,200]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 JAZZMIN_SETTINGS = {

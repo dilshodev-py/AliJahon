@@ -57,7 +57,7 @@
                                         data-post-id="{{ product.slug }}"
                                         title="Add to Wish List"><span
                                         class="far fa-heart"></span></a><a
-                                        class="btn btn-sm btn-falcon-default" href="#!" data-bs-toggle="tooltip"
+                                        class="btn btn-sm btn-falcon-default" href="{% url 'product_detail' product.slug %}" data-bs-toggle="tooltip"
                                         data-bs-placement="top" title="Add to Cart"><span
                                         class="fas fa-cart-plus"></span></a></div>
                             </div>

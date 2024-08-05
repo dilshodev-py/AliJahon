@@ -9,8 +9,8 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, FormView, DetailView
 import django.contrib.auth.password_validation as validators
 
-from apps.forms import OrderForm
-from apps.models import Category, Product, User, WishList, Order
+from apps.forms import OrderForm, StreamForm
+from apps.models import Category, Product, User, WishList, Order, Stream
 
 
 class CategoryListView(ListView):
@@ -82,15 +82,16 @@ class CustomLoginView(TemplateView):
                 }
                 return render(request, template_name='apps/auth/login.html', context=context)
 
-class WishListView(LoginRequiredMixin,ListView):
+
+class WishListView(LoginRequiredMixin, ListView):
     queryset = WishList.objects.all()
     template_name = 'apps/wish-list.html'
     paginate_by = 10
     context_object_name = "wishlists"
+
     def get_queryset(self):
         query = super().get_queryset().filter(user=self.request.user)
         return query
-
 
 
 class LikeProductView(View):
@@ -109,24 +110,44 @@ class OrderListView(ListView):
     context_object_name = 'orders'
 
     def get_queryset(self):
-        query  = super().get_queryset().filter(user=self.request.user)
+        query = super().get_queryset().filter(user=self.request.user)
         return query
+
 
 class MarketListView(ListView):
     template_name = 'apps/stream/product-market.html'
     queryset = Category.objects.all()
     context_object_name = 'categories'
 
-
-
-
-    def get_context_data(self,*args, **kwargs):
-        data = super().get_context_data(*args,**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        data = super().get_context_data(*args, **kwargs)
         products = Product.objects.all()
-        if slug:=self.request.GET.get("category"):
+        if slug := self.request.GET.get("category"):
             products = products.filter(category__slug=slug)
         data['products'] = products
         return data
+
+
+class StreamFormView(LoginRequiredMixin, FormView):
+    form_class = StreamForm
+    template_name = 'apps/stream/product-market.html'
+
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+        return redirect('stream-list')
+
+    def form_invalid(self, form):
+        print(form)
+
+
+class StreamListView(ListView):
+    queryset = Stream.objects.all()
+    template_name = 'apps/stream/stream-list.html'
+    context_object_name = 'streams'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(owner=self.request.user)
 
 
 

@@ -1,4 +1,5 @@
 Tasks:
+
     1) template , menularni ishlidigan qilamiz
     2) Bosh sahifa + pagination
     3) Mahsulotlar + pagination
@@ -8,5 +9,19 @@ Tasks:
     7) product order
     8) market
 
+    9) fixture for category
+    10)stream link copy
+    11)market batafsil button ishlidigan qilamiz
+    12)market Reklama post button ishlidigan qilamiz
+    13)stream model StatusType qo'shamiz
+    14)stream form
 
+
+
+
+New information:
+    wakatime
+    ckeditor
+    django resized
+    mptt
 

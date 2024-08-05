@@ -1,9 +1,13 @@
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Model, DateTimeField, CharField, ImageField, SlugField, TextField, FloatField, ForeignKey, \
-    CASCADE, IntegerField, TextChoices
+    CASCADE, IntegerField, TextChoices, SET_NULL
 from django.utils.functional import cached_property
 from django.utils.text import slugify
+from django_resized import ResizedImageField
+from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
 
 
 class CustomUserManager(BaseUserManager):
@@ -19,7 +23,7 @@ class CustomUserManager(BaseUserManager):
         user = self.create_user(phone_number, password, **extra_fields)
         user.is_superuser = True
         user.is_staff = True
-        # user.save()
+        user.save()
         return user
 
 
@@ -42,6 +46,7 @@ class User(AbstractUser):
     @property
     def wishlist_all(self):
         return self.wishlists.values_list('product_id', flat=True)
+
 
 class Region(Model):
     name = CharField(max_length=255, unique=True)
@@ -83,8 +88,9 @@ class BaseSlugModel(Model):
         return self.name
 
 
-class Category(BaseSlugModel, BaseModel):
+class Category(BaseSlugModel, MPTTModel):
     image = ImageField(upload_to='images/')
+    parent = TreeForeignKey('self', on_delete=CASCADE, null=True, blank=True, default=None, related_name='children')
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -97,27 +103,24 @@ class Category(BaseSlugModel, BaseModel):
 #     name = CharField(max_length=255)
 
 class Product(BaseSlugModel, BaseModel):
-    description = TextField()
+    description = RichTextUploadingField()
     price = FloatField()
     quantity = IntegerField()
     for_stream_price = FloatField(default=1000)
+    tg_id = IntegerField(null=True, blank=True)
     category = ForeignKey('apps.Category', CASCADE, to_field='slug', related_name='products')
 
     @property
     def first_image(self):
         return self.images.first()
 
-
-
     def __str__(self):
         return self.name
 
 
 class ProductImage(Model):
-    image = ImageField(upload_to='products/')
+    image = ResizedImageField(quality=100, upload_to='products/')
     product = ForeignKey('apps.Product', CASCADE, related_name='images')
-
-
 
 
 class Order(BaseModel):
@@ -131,3 +134,15 @@ class Order(BaseModel):
 class WishList(BaseModel):
     product = ForeignKey('apps.Product', CASCADE, related_name='wishlists', to_field='slug')
     user = ForeignKey('apps.User', CASCADE, related_name='wishlists')
+
+
+class Stream(BaseModel):
+    name = CharField(max_length=255)
+    discount = FloatField()
+    count = IntegerField(default=0)
+    product = ForeignKey('apps.Product', SET_NULL, null=True, related_name='streams')
+    owner = ForeignKey('apps.User', CASCADE, related_name='streams')
+    class Meta:
+        ordering = '-id',
+    def __str__(self):
+        return self.name

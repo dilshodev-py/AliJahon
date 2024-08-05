@@ -16,17 +16,18 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form method="POST" class="form-class">
-                                <input type="hidden" name="csrfmiddlewaretoken"
-                                       value="t6JkhhQ7ugfWKvXkFPCvbyy5sZaZJ77dw5ScO4SWNm5EXxw5kfUyi1a49Ak1wm7h">
-                                <input name="product_id" type="hidden" id="hidden_product" value="test">
+                            <form method="POST" action="{% url 'stream-form' %}" class="form-class">
+                                {% csrf_token %}
+                                <input name="product" type="hidden" id="hidden_product" value="test">
+                                <input name="owner" type="hidden" id="hidden_product" value="{{ request.user.pk }}">
 
-                                Oqim nomi <input type="text" name="title" class="form-control" placeholder=""
+                                Oqim nomi <input type="text" name="name" class="form-control" placeholder="Nomi"
                                                  mt-2="Oqim uchun nom kiriting" required="" id="id_title">
 
-                                Chegirma <input type="text" name="discount" class="form-control" placeholder=""
+                                Chegirma <input type="text" name="discount" class="form-control" placeholder="Chegirma"
                                                 mt-2="Chegirma miqdori: {{ product.benefit }} so'mgacha"
-                                                id="id_discount">
+                                                >
+                               
 
                                 <input type="submit" class="btn btn-primary mt-4" value="Oqim yaratish">
                             </form>
@@ -105,15 +106,11 @@
 
                                     <li class="list-group-item">Zaxirada: <strong> {{ product.quantity }} ta </strong>
                                     </li>
-
                                 </ul>
-
-
-                                <a href="https://t.me/alijahon_uz_Internet_magazin/1538"
-                                   class="btn bg-danger text-white mt-2 mb-2">Reklama
-                                    Posti</a>
+                                <a href="https://t.me/alijahon_uz_Internet_magazin/{{ product.tg_id }}"
+                                   class="btn bg-danger text-white mt-2 mb-2">Reklama Posti</a>
                                 <button class="btn btn-primary btn_open_modal" type="button" data-bs-toggle="modal"
-                                        data-bs-target="#exampleModal" name="447">
+                                        data-bs-target="#exampleModal" name="{{ product.id }}">
                                     Oqim yaratish
                                 </button>
                                 <a href="/admin_page/product/447" class="btn bg-danger text-white mt-2">Batafsil</a>
