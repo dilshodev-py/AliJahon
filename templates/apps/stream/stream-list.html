@@ -44,7 +44,7 @@
                             <div class="card">
                                 <div class="card-body" style="position: relative;">
                                     <div class="form-group">
-                                        <input type="text" value="https://0.0.0.0:8000/oqim/{{ stream.id }}" readonly="" class="ref_link form-control">
+                                        <input type="text" value="{{ request.headers.host }}/oqim/{{ stream.id }}" readonly="" class="ref_link form-control">
                                     </div>
                                     <button class="copy_ref_bn btn btn-primary" style="float:left; margin-right:9px; margin-top: 9px;">Nusxa ko'chirish
                                     </button>

@@ -2,6 +2,8 @@ import re
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.db.models import F, Count
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -10,11 +12,11 @@ from django.views.generic import TemplateView, ListView, FormView, DetailView
 import django.contrib.auth.password_validation as validators
 
 from apps.forms import OrderForm, StreamForm
-from apps.models import Category, Product, User, WishList, Order, Stream
+from apps.models import Category, Product, User, WishList, Order, Stream, Comment
 
 
 class CategoryListView(ListView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().select_related('category')
     template_name = 'apps/trade/home-page.html'
     context_object_name = 'products'
     paginate_by = 3
@@ -26,7 +28,7 @@ class CategoryListView(ListView):
 
 
 class ProductListView(ListView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().prefetch_related('images')
     template_name = 'apps/trade/product-list.html'
     context_object_name = 'products'
 
@@ -48,7 +50,6 @@ class ProductDetailView(DetailView, FormView):
     model = Product
     template_name = 'apps/trade/product-detail.html'
     context_object_name = 'product'
-    slug_url_kwarg = 'slug'
 
     def form_valid(self, form):
         if form.is_valid():
@@ -150,5 +151,40 @@ class StreamListView(ListView):
         return super().get_queryset().filter(owner=self.request.user)
 
 
+class StreamStatisticDetailView(DetailView):
+    queryset = Product.objects.all()
+    template_name = 'apps/stream/stream-statistics.html'
+    context_object_name = 'product'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['self_stream'] = Stream.objects.filter(product= self.object , owner=self.request.user)
+        return context
+
+
+
+class StreamOrderView(DetailView , FormView):
+    form_class = OrderForm
+    queryset = Stream.objects.all()
+    template_name = 'apps/trade/product-detail.html'
+    context_object_name = 'stream'
+
+    def form_valid(self, form):
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.is_stream = True
+            form.user = self.request.user
+            form.save()
+        return render(self.request, 'apps/order/product-order.html', {'form': form})
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data( **kwargs)
+        context['product'] = self.object.product
+        stream_id = self.kwargs.get('pk')
+        Stream.objects.filter(pk = stream_id).update(count= F('count') + 1)
+        return context
+
+
+
+Count
 

@@ -1,8 +1,10 @@
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model, DateTimeField, CharField, ImageField, SlugField, TextField, FloatField, ForeignKey, \
-    CASCADE, IntegerField, TextChoices, SET_NULL
+    CASCADE, IntegerField, TextChoices, SET_NULL, BooleanField, PositiveIntegerField, Index
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django_resized import ResizedImageField
@@ -105,6 +107,7 @@ class Category(BaseSlugModel, MPTTModel):
 class Product(BaseSlugModel, BaseModel):
     description = RichTextUploadingField()
     price = FloatField()
+    payment = FloatField()
     quantity = IntegerField()
     for_stream_price = FloatField(default=1000)
     tg_id = IntegerField(null=True, blank=True)
@@ -124,10 +127,16 @@ class ProductImage(Model):
 
 
 class Order(BaseModel):
+
+    class StatusType(TextChoices):
+        NEW = 'new', 'New'
+
     product = ForeignKey('apps.Product', CASCADE, related_name='orders')
     quantity = IntegerField(default=1)
+
     user = ForeignKey('apps.User', CASCADE, related_name='orders')
     full_name = CharField(max_length=255)
+    is_stream = BooleanField(default=False)
     phone_number = CharField(max_length=20)
 
 
@@ -142,7 +151,33 @@ class Stream(BaseModel):
     count = IntegerField(default=0)
     product = ForeignKey('apps.Product', SET_NULL, null=True, related_name='streams')
     owner = ForeignKey('apps.User', CASCADE, related_name='streams')
+
     class Meta:
         ordering = '-id',
+
     def __str__(self):
         return self.name
+
+
+class Comment(Model):
+    message = SlugField()
+    content_type = ForeignKey(ContentType,CASCADE)
+    object_id = PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def __str__(self):
+        return self.message
+
+    class Meta:
+        indexes = [
+            Index(fields=["content_type", "object_id"]),
+        ]
+
+
+
+
+
+"""
+product_type = ContentType.objects.get_for_model(Product)
+comments = Comment.objects.filter(content_type__pk=product_type.id, object_id=1)
+"""

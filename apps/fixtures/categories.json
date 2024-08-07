@@ -1,0 +1,10 @@
+[
+  {
+    "model": "apps.Category",
+    "pk" : 1,
+    "fields": {
+      "name": "Davolovchi  mahsulotlar",
+      "image": "images/A2ABC07B-AE08-4D84-B8DA-C21DA27DFCBC.jpeg"
+    }
+  }
+]

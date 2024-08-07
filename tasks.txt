@@ -1,3 +1,8 @@
+wakatime
+ckeditor
+django resized
+mptt
+
 Tasks:
 
     1) template , menularni ishlidigan qilamiz
@@ -13,15 +18,18 @@ Tasks:
     10)stream link copy
     11)market batafsil button ishlidigan qilamiz
     12)market Reklama post button ishlidigan qilamiz
-    13)stream model StatusType qo'shamiz
     14)stream form
+    13)Order model StatusType qo'shamiz
+    15) read : F , Q , annotate
 
-
+    wakatime
 
 
 New information:
-    wakatime
-    ckeditor
-    django resized
-    mptt
+    select_related
+    prefetch_related
+    content_type
+    annotate
+    F , Q
+    git hub
 
