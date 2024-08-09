@@ -3,8 +3,8 @@ from django.urls import path
 
 from apps.forms import StreamForm
 from apps.views import CategoryListView, CustomLoginView, ProductListView, ProductDetailView, \
-    WishListView, LikeProductView, OrderListView, MarketListView, StreamFormView, StreamListView, \
-    StreamStatisticDetailView, StreamOrderView
+    WishListView, LikeProductView, OrderListView, MarketListView, StreamFormView, StreamListView, StreamOrderView, \
+    StreamDetailView, StreamStatisticsListView
 
 urlpatterns = [
     path('', CategoryListView.as_view(), name='home'),
@@ -20,8 +20,9 @@ urlpatterns = [
 urlpatterns += [
     path('stream/form' , StreamFormView.as_view() , name = 'stream-form'),
     path('stream/list' , StreamListView.as_view() , name = 'stream-list'),
-    path('stream/statistic/<str:slug>' , StreamStatisticDetailView.as_view() , name = 'stream-statistic'),
-    path('oqim/<int:pk>' , StreamOrderView.as_view() , name = 'stream-statistic'),
+    path('stream/detail/<str:slug>' , StreamDetailView.as_view() , name = 'stream-detail'),
+    path('stream/statistics/' , StreamStatisticsListView.as_view() , name = 'stream-statistic'),
+    path('oqim/<int:pk>' , StreamOrderView.as_view() , name = 'stream-order'),
 ]
 
 urlpatterns += [

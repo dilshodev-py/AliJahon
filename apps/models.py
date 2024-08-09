@@ -127,17 +127,22 @@ class ProductImage(Model):
 
 
 class Order(BaseModel):
-
     class StatusType(TextChoices):
         NEW = 'new', 'New'
+        READY = "ready", 'Ready'
+        DELIVER = "deliver", 'Deliver'
+        DELIVERED = "delivered", 'Delivered'
+        CANT_PHONE = "cant_phone", 'Cant_phone'
+        CANCELED = "canceled", 'Canceled'
+        ARCHIVED = "archived", 'Archived'
 
-    product = ForeignKey('apps.Product', CASCADE, related_name='orders')
     quantity = IntegerField(default=1)
-
-    user = ForeignKey('apps.User', CASCADE, related_name='orders')
+    status = CharField(max_length=50, choices=StatusType.choices, default=StatusType.NEW)
     full_name = CharField(max_length=255)
-    is_stream = BooleanField(default=False)
+    stream = ForeignKey('apps.Stream' , SET_NULL, null=True, blank=True, default=None, related_name='orders')
     phone_number = CharField(max_length=20)
+    product = ForeignKey('apps.Product', CASCADE, related_name='orders')
+    user = ForeignKey('apps.User', CASCADE, related_name='orders')
 
 
 class WishList(BaseModel):
@@ -174,6 +179,9 @@ class Comment(Model):
         ]
 
 
+
+class SiteSettings(Model):
+    deliver_price = FloatField(default=0)
 
 
 

@@ -3,7 +3,7 @@ from django.contrib.admin import ModelAdmin, StackedInline
 from django.utils.html import format_html
 from mptt.admin import DraggableMPTTAdmin
 
-from apps.models import Category, Product, ProductImage, User
+from apps.models import Category, Product, ProductImage, User, SiteSettings
 
 admin.site.site_header = "Alijahon Admin"
 admin.site.index_title = "Welcome to Alijahon Portal"
@@ -46,6 +46,11 @@ class ProductAdmin(ModelAdmin):
         if not obj.quantity:
             icon_url = 'https://img.icons8.com/?size=100&id=63688&format=png&color=000000'
         return format_html("<img src='{}' style='width: 30px' />", icon_url)
+
+
+@admin.register(SiteSettings)
+class SiteSettingsModelAdmin(ModelAdmin):
+    pass
 
 
 # plan:

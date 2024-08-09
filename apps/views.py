@@ -3,7 +3,7 @@ import re
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.db.models import F, Count
+from django.db.models import F, Count, Q, Sum
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -12,7 +12,7 @@ from django.views.generic import TemplateView, ListView, FormView, DetailView
 import django.contrib.auth.password_validation as validators
 
 from apps.forms import OrderForm, StreamForm
-from apps.models import Category, Product, User, WishList, Order, Stream, Comment
+from apps.models import Category, Product, User, WishList, Order, Stream, Comment, SiteSettings
 
 
 class CategoryListView(ListView):
@@ -151,9 +151,9 @@ class StreamListView(ListView):
         return super().get_queryset().filter(owner=self.request.user)
 
 
-class StreamStatisticDetailView(DetailView):
+class StreamDetailView(DetailView):
     queryset = Product.objects.all()
-    template_name = 'apps/stream/stream-statistics.html'
+    template_name = 'apps/stream/stream-detail.html'
     context_object_name = 'product'
 
     def get_context_data(self, **kwargs):
@@ -172,19 +172,67 @@ class StreamOrderView(DetailView , FormView):
     def form_valid(self, form):
         if form.is_valid():
             form = form.save(commit=False)
-            form.is_stream = True
+            form.stream = self.get_object()
             form.user = self.request.user
             form.save()
+            form.product.price -= self.get_object().discount
+            form.deliver_price = SiteSettings.objects.first().deliver_price
         return render(self.request, 'apps/order/product-order.html', {'form': form})
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data( **kwargs)
-        context['product'] = self.object.product
+        product = self.object.product
+        product.price -= self.object.discount
+        context['product'] = product
+        context['deliver_price'] = SiteSettings.objects.first().deliver_price
         stream_id = self.kwargs.get('pk')
         Stream.objects.filter(pk = stream_id).update(count= F('count') + 1)
         return context
 
 
+class StreamStatisticsListView(ListView):
+    queryset = Stream.objects.all()
+    template_name = 'apps/stream/stream-statistics.html'
+    context_object_name = 'streams'
 
-Count
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query =self.get_queryset().aggregate(
+            all_count = Sum('count'),
+            all_new = Sum('new_count'),
+            all_ready = Sum('ready_count'),
+            all_deliver = Sum('deliver_count'),
+            all_delivered = Sum('delivered_count'),
+            all_cant_phone = Sum('cant_phone_count'),
+            all_canceled = Sum('canceled_count'),
+            all_archived = Sum('archived_count'),
+        )
+        context.update(query)
+        return context
+
+    def get_queryset(self):
+        query = super().get_queryset().filter(owner=self.request.user).annotate(
+            new_count=Count('orders', filter=Q(orders__status = Order.StatusType.NEW )),
+            ready_count=Count('orders', filter=Q(orders__status = Order.StatusType.READY )),
+            deliver_count=Count('orders', filter=Q(orders__status = Order.StatusType.DELIVER )),
+            delivered_count=Count('orders', filter=Q(orders__status = Order.StatusType.DELIVERED )),
+            cant_phone_count=Count('orders', filter=Q(orders__status = Order.StatusType.CANT_PHONE )),
+            canceled_count=Count('orders', filter=Q(orders__status = Order.StatusType.CANCELED )),
+            archived_count=Count('orders', filter=Q(orders__status = Order.StatusType.ARCHIVED )),
+        ).values('name' , 'product__name' , 'count', 'new_count' ,
+                 'ready_count',
+                 'deliver_count',
+                 'delivered_count',
+                 'cant_phone_count',
+                 'canceled_count',
+                 'archived_count')
+        return query
+
+
+
+
+
+
+
+
 
